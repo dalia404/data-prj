@@ -1,16 +1,16 @@
-# المكتبات 
+#
 import pandas as pd
 from collections import Counter, defaultdict, deque
 import re
 from typing import Optional
 import difflib  
 
-#قراءة الملف مع اظهار جميع الصفوف والاعمدة دون اختصار 
+
 df = pd.read_csv(r"C:\Users\ASUS\Downloads\archive (11)data\train.csv", encoding='latin1')
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-# تنظيف النصوص
+
 
 def clean_text(text):
     text = str(text).lower()
@@ -19,7 +19,7 @@ def clean_text(text):
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
-#المعالجة 
+
 def preprocess(text):
     if pd.isna(text):
         return []
@@ -29,7 +29,6 @@ def preprocess(text):
 df['cleaned_words'] = df['text'].apply(preprocess)
 df['cleaned_text'] = df['cleaned_words'].apply(lambda words: ' '.join(words))
 
-# تحليل الكلمات
 
 def word_statistics(df):
     all_words = [word for words in df['cleaned_words'] for word in words]
@@ -55,7 +54,7 @@ class CharNode:
         self.next: Optional['CharNode'] = None
 
 
-#  linked list تحويل النص إلى 
+#  linked list 
 def build_linked_list(text):
     head = CharNode(text[0]) if text else None
     current = head
@@ -67,7 +66,6 @@ def build_linked_list(text):
 
 
 
-#linked list و التمثيل في queue ومعالجنها في  stack تحليل الحروف وتخزينها في
 def character_statistics(df):
     all_text = "".join(df['cleaned_text'].fillna(''))
     unique_chars = set(all_text)
@@ -111,7 +109,7 @@ def character_statistics(df):
     }
 
 
-#  stack و تخزن في queue البحث عن كلمة في النصوص تعالج في
+# search
 search_history_stack = []
 search_queue = deque()
 
@@ -144,7 +142,7 @@ def search_word_summary(df, targets):
         else:
             print("No occurrences found.")
 
-        #  stack تخزين النتيجة في 
+        #  stack 
         result = {
             'word': target,
             'total_count': count,
@@ -156,8 +154,7 @@ def search_word_summary(df, targets):
 
     return all_results
 
-
-#استبدال كلمة بكلمة جديدة 
+#replace
 replace_history_stack = []
 
 def replace_word(df, old_word, new_word):
@@ -169,7 +166,7 @@ def replace_word(df, old_word, new_word):
     return df
 
 
-# بناء نموذج Bigram و Trigram
+#  Bigram , Trigram
 def build_ngram_models(df):
     bigrams = defaultdict(Counter)
     trigrams = defaultdict(Counter)
@@ -181,7 +178,7 @@ def build_ngram_models(df):
     return bigrams, trigrams
 
 
-# التنبؤ بالكلمة التالية 
+
 prediction_history_stack = []
 
 def predict_next_word(bigrams, trigrams, input_text):
@@ -203,7 +200,7 @@ def predict_next_word(bigrams, trigrams, input_text):
         print("No suggestions found.")
         return []
 
-# تحليل المشاعر
+
 positive_words = {"love", "happy", "great", "good", "awesome", "excellent", "fantastic", "amazing", "fun", "smile", "hope", "peace", "like", "joy","lool" , "nice", "cool", "wonderful", "cute"}
 negative_words = {"sad", "bad", "hate", "angry", "terrible", "awful", "worse", "worst", "sucks", "depressing", "cry", "pain", "problem", "annoying", "mad", "bully", "hurt", "poor"}
 
@@ -236,7 +233,7 @@ def analyze_text(text):
     else:
         return "Neutral"
 
-# تحليل راس  النصوص
+
 
 def analyze_with_queue(df):
     tweet_queue = deque(df['text'].fillna('').tolist())
@@ -248,7 +245,7 @@ def analyze_with_queue(df):
     print(df[['text', 'sentiment']].head())
     return df
 
-#  تحليل صف واحد من المستخدم
+
 
 def analyze_row_by_index(df):
     try:
@@ -262,8 +259,8 @@ def analyze_row_by_index(df):
         print(f"\nPredicted Sentiment: {sentiment}")
     except ValueError:
         print("Error: please enter a valid integer.")
+        
 
-# تصحيح إملائي
 all_known_words = set(word for words in df['cleaned_words'] for word in words)
 
 def suggest_spelling(word):
@@ -271,7 +268,7 @@ def suggest_spelling(word):
     print(f"\nSuggestions for '{word}': {suggestions if suggestions else 'No suggestions'}")
     return suggestions
 
-# استخراج كلمات مفتاحية من اول 10 
+
 
 def extract_keywords(df, top_n=10):
     stop_words = {'the', 'and', 'is', 'a', 'to', 'in', 'for', 'on', 'of'}
@@ -281,7 +278,7 @@ def extract_keywords(df, top_n=10):
     for word, freq in word_freq.most_common(top_n):
         print(f" - {word}: {freq}")
 
-# التشغيل للبرنامج 
+#
 
 def main():
     print("=" * 60)
@@ -289,7 +286,7 @@ def main():
     print("=" * 60)
 
 
-    # تحميل النموذج اللغوي
+    
     bigrams, trigrams = build_ngram_models(df)
 
     while True:
@@ -340,4 +337,5 @@ def main():
             print("Invalid choice")
 
 if __name__ == "__main__":
+
     main()
